@@ -11,7 +11,7 @@ OPTION PROLOGUE:rbpFramePrologue
 OPTION EPILOGUE:none
 
 .data
-TymofeievHead      db 'Лабораторна робота 1 MASM64',0
+TymofeievHead      db 'Лабораторна робота 1 під MASM64',0
 TymofeievInfo      db 'ПІБ: Тимофеєв Даниіл Костянтинович',13,
 					  'Дата народження: 10.04.2005',13,
 				      'Номер залікової книжки: 8828',0
