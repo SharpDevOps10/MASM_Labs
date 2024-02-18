@@ -17,7 +17,7 @@ $ git clone https://github.com/SharpDevOps10/MASM_Labs
 У кожній директорії Ви можете побачити README файл із завданням та сам код програми на мові Ассемблер під MS Windows
 
 ## Я збірати та скомпонувати асемблерний коду у виконуваний файл під операційну систему Windows?
-
+### Для MASM32
 Для генерації об'єктного файлу із розширенням `.obj.` треба прописати таку команду:
 
 ```bash
@@ -28,6 +28,10 @@ $ ml /c /coff example.asm
 ```bash
 $ link32 /subsystem:windows example.obj
 ```
+
+### Для MASM64
+
+
 ## Список лабораторних робіт
 
 1. [Лабораторна робота 1. Налаштування програмних середовищ MASM32 та MASM64](https://github.com/SharpDevOps10/MASM_Labs/tree/main/1-23-IM-22-Tymofeiev)
