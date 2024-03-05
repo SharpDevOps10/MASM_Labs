@@ -31,6 +31,13 @@ $ link32 /subsystem:windows example.obj
 
 ### Для MASM64
 
+```bash
+$ ml64 /c /coff example.asm
+```
+
+```bash
+$ link /subsystem:windows /entry:WinMain example.obj
+```
 
 ## Список лабораторних робіт
 
