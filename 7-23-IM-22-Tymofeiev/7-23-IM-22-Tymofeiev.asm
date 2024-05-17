@@ -61,7 +61,7 @@ extern TymofeievCalcDominatorWithTan: PROTO
 	ThreePiOverTwoMinus dq -4.7123889804
 
     TymofeievCheckZero dq 0.0
-    TymofeievNominatorTwo dq 2.0
+    TymofeievNominatorTwo dq -2.0
     TymofeievForTanFour dq 4.0
     TymofeievEightyTwo dq 82.0
 
@@ -101,32 +101,32 @@ extern TymofeievCalcDominatorWithTan: PROTO
 .code 
 
 ; Procedure to compute (-2 * c)
-TymofeievComputeMinusTwoCReg PROC uses ebx eax
+TymofeievComputeMinusTwoCReg PROC uses ebx eax ebp
 
     ; Load c into FPU stack
     FLD qword ptr [eax]
-    FMUL TymofeievNominatorTwo ; Multiply by -2
-    FCHS                        ; Change sign
-    FSTP qword ptr [eax]        ; Store the result back to edx
+    FLD qword ptr [ebp]  ; Load value to multiply (-2)
+    FMUL                 ; Multiply by -2
+    FSTP qword ptr [eax] ; Store the result back to eax
 
     ret
 
 TymofeievComputeMinusTwoCReg ENDP
 
 ; Procedure to compute (d * 82)
-TymofeievComputeEightyTwoDReg PROC uses ebx edx
+TymofeievComputeEightyTwoDReg PROC uses esi edx
 
 
     PUSH edx           
-    PUSH ebx 
+    PUSH esi 
     
     ; Load d into FPU stack
     mov edx, [esp + 8]      
     FLD qword ptr [edx]
-    FMUL TymofeievEightyTwo 
+    FMUL qword ptr [esi]
     FSTP qword ptr [edx]
     
-    POP ebx                 
+    POP esi                 
     POP edx    
     ret                      
 TymofeievComputeEightyTwoDReg ENDP
@@ -176,23 +176,25 @@ TymofeievCountTheFormulaLoop:
     cmp ecx, ERROR_ZERO_DENOMINATOR
     JE TymofeievOutputInvalidMSGBoxLoop
   
-  invoke FloatToStr2, [TymofeievArrayForAValues + edi * 8], offset TymofeievARoutineString
+	invoke FloatToStr2, [TymofeievArrayForAValues + edi * 8], offset TymofeievARoutineString
 		invoke FloatToStr2, [TymofeievArrayForBValues + edi * 8], offset TymofeievBRoutineString
 		invoke FloatToStr, [TymofeievArrayForCValues + edi * 8], offset TymofeievCRoutineString
 		invoke FloatToStr, [TymofeievArrayForDValues + edi * 8], offset TymofeievDRoutineString
 
   ; Compute (-2 * c) and (d * 82)
-  lea eax, [TymofeievArrayForCValues + edi * 8]
+	lea ebp, TymofeievNominatorTwo
+	lea eax, [TymofeievArrayForCValues + edi * 8]
     call TymofeievComputeMinusTwoCReg ; Call procedure to compute (-2 * c)
 
-  lea edx, [TymofeievArrayForDValues + edi * 8]
-  push edx  ; Сохраняем edx
-  call TymofeievComputeEightyTwoDReg ; Call procedure to compute (d * 82)
-  pop edx
+	mov esi, offset TymofeievEightyTwo
+    push esi
+	lea edx, [TymofeievArrayForDValues + edi * 8]
+	push edx  ; Save edx
+	call TymofeievComputeEightyTwoDReg ; Call procedure to compute (d * 82)
   
     ; Add (-2 * c) and (d * 82) to get the numerator  
-    FLD qword ptr [eax]       ; Загружаем (-2 * c) в стек FPU
-	FSUB qword ptr [edx]  ; Вычитаем (d * 82)
+    FLD qword ptr [eax]       ; Load (-2 * c) onto the FPU stack
+	FSUB qword ptr [edx]  ; Subtract (d * 82)
 	ADD esp, 8 
     FSTP TymofeievNumeratorRes
 
@@ -204,7 +206,7 @@ TymofeievCountTheFormulaLoop:
   ; SAVE!
     FSTP TymofeievEventualResultBuffer
 
-  call TymofeievOutputNormalMSGBoxLoop
+	call TymofeievOutputNormalMSGBoxLoop
 
     inc edi ; Increment calculation counter
     inc ebx ; Increment window title counter
